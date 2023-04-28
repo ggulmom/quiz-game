@@ -6,6 +6,7 @@ const timeText = document.getElementById('time');
 const msgText = document.getElementById('msg');
 const choices = Array.from(document.getElementsByClassName('choice-text'));
 const scoreboard = document.getElementById('scoreboard');
+const gamescreen = document.getElementById('game-screen');
 
 startBtn.addEventListener('click', startGame);
 highBtn.addEventListener('click', toggleScoreBoard);
@@ -66,6 +67,14 @@ var questions = [
 const WRONG_PENALTY = 10;
 const totalQs = questions.length;
 
+function showGameScreen() {
+    gamescreen.style.display = "block";
+}
+
+function hideGameScreen() {
+    gamescreen.style.display = "none";
+}
+
 function showScoreBoard() {
     scoreboard.style.display = "block";
     highBtn.innerText = "Hide High Scores";
@@ -100,16 +109,22 @@ function toggleScoreBoard() {
     else hideScoreBoard()
 }
 
-function startGame() {
-    // hide the scoreboard
-    hideScoreBoard(false);
-    // reset the game
+function resetGame() {
+    hideGameScreen();
+    hideScoreBoard();
     // clear existing timer if any, question start from number 0, score start from 30
     if(myInterval != 0) clearInterval(myInterval);
     questionCounter = 0;
     timeScore = 30;
     // display initial time score
     updateTimeText();
+    msgText.innerText = '';
+}
+
+function startGame() {
+    // reset the game
+    resetGame();
+    showGameScreen();
 
     // start the timer, updated everySecond 
     myInterval = setInterval(everySecond, 1000);
@@ -186,13 +201,13 @@ function endGame() {
     if(timeScore <=0) timeScore = 0;
     updateTimeText();
 
-    // msgText.innerText = 'score: ' + timeScore;
     var name = prompt('Your Score is ' + timeScore + '. Please enter your initial.');
     highscores.push({
         initial: name,
         score: timeScore
     });
 
+    resetGame();
     showScoreBoard();
 }
 
