@@ -1,18 +1,14 @@
 const question = document.getElementById('question');
-const choices = Array.from(document.getElementsByClassName('choice-text'));
 const startBtn = document.getElementById('start');
 const timeText = document.getElementById('time');
 const msgText = document.getElementById('msg');
+const choices = Array.from(document.getElementsByClassName('choice-text'));
 
-startBtn.addEventListener('click', function() {
-    startGame();
-});
+startBtn.addEventListener('click', startGame);
 
-var currentQuestion = {};
-var acceptingAnswers = false;
 var timeScore = 0;
 var questionCounter = 0;
-var myInterval;
+var myInterval = 0;
 
 var questions = [
     {
@@ -48,22 +44,30 @@ const totalQs = questions.length;
 
 var waitAnswer = false;
 
-var startGame = function() {
+function startGame() {
+    // reset the game
+    // clear existing timer if any, question start from number 0, score start from 30
+    if(myInterval != 0) clearInterval(myInterval);
     questionCounter = 0;
-    timeScore = 30;        // timer initial value
-
-    // display initial time
+    timeScore = 30;
+    // display initial time score
     updateTimeText();
 
-    // start the timer
+    // start the timer, updated everySecond 
     myInterval = setInterval(everySecond, 1000);
+    
+    // Start Question
     newQuestion()
 };
 
 function everySecond() {
+    // every second timer counts down
     timeScore --;
-    if(timeScore === 0) endGame();
+    // update timer text whenever the value changes
     updateTimeText();
+
+    // time's up then end the game
+    if(timeScore <= 0) endGame();
 }
 
 function updateTimeText() {
@@ -73,16 +77,33 @@ function updateTimeText() {
 function newQuestion() {
     // display a question and wait the input
     displayQuestion(questionCounter);
+
+    // waitAnswer enables clicking the choices
     waitAnswer = true;
 }
 
 function displayQuestion(i) {
+    // show the question
     question.innerText = questions[i].question;
+    
+    // show the choices
     for(j=0;j<4;j++) {
         const number = choices[j].dataset['number'];
         choices[j].innerText = questions[i]['choice' + number];
     };
 }
+
+// click hanlding of choices
+for(j=0;j<4;j++) {
+    choices[j].addEventListener('click', function() {
+        // ignore if waitAnswer is false
+        if (!waitAnswer) return;
+        waitAnswer = false;
+
+        // check the answer
+        checkAnswer(this.dataset['number']);
+    });
+};
 
 function checkAnswer(j) {
     if (j == questions[questionCounter].answer)
@@ -90,31 +111,35 @@ function checkAnswer(j) {
         msgText.innerText = 'Correct';
     } else {
         msgText.innerText = 'Wrong. The answer is ' + questions[questionCounter].answer;
+        
+        // wrong answer will decrease the time
         timeScore -= WRONG_PENALTY;
         updateTimeText();
     }
 
+    // prepare for the next question
     questionCounter ++;
+    // if end of the question, then call endGame
     if(questionCounter>=totalQs) {
         endGame();
         return;
     }
-    waitAnswer = false;
+
+    // ready to show the next question
     newQuestion();
 }
 
 function endGame() {
+    // stop the timer
     clearInterval(myInterval);
+    myInterval = 0;
+
+    // minimum score is 0
     if(timeScore <=0) timeScore = 0;
     updateTimeText();
+    
     msgText.innerText = 'score: ' + timeScore;
 }
 
-for(j=0;j<4;j++) {
-    choices[j].addEventListener('click', function() {
-        if (!waitAnswer) return;
-        checkAnswer(this.dataset['number']);
-    });
-};
 
 // startGame();

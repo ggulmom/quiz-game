@@ -8,16 +8,24 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    
+    <!-- start button: clickable -->
     <div id="start" class="btn">Click to Start</div>
+
+    <!-- Time Count Down: update every second or when answer is wrong -->
     <h3>Time: </h3> <h2 id="time"></h2>
 
+        <!-- Question to be displayed -->
         <h2 id="question" class="container"></h2>
+
+        <!-- Clickable -> triggers next question -->
         <p class="choice-text container" data-number="1"></p>
         <p class="choice-text container" data-number="2"></p>
         <p class="choice-text container" data-number="3"></p>
         <p class="choice-text container" data-number="4"></p>
-        <div id="msg"></div>
+        
+        <!-- Message to be updated by javascript -->
+        <br>
+        <h3 id="msg" class="container"></h3>
     <script src="script.js"></script>
   </body>
 </html>
