@@ -1,14 +1,37 @@
 const question = document.getElementById('question');
 const startBtn = document.getElementById('start');
+const highBtn = document.getElementById('highs');
+const clearBtn = document.getElementById('clear');
 const timeText = document.getElementById('time');
 const msgText = document.getElementById('msg');
 const choices = Array.from(document.getElementsByClassName('choice-text'));
+const scoreboard = document.getElementById('scoreboard');
 
 startBtn.addEventListener('click', startGame);
+highBtn.addEventListener('click', toggleScoreBoard);
+clearBtn.addEventListener('click', function() {
+    highscores = [];
+    showScoreBoard();
+});
+
+// click hanlding of choices
+for(j=0;j<4;j++) {
+    choices[j].addEventListener('click', function() {
+        // ignore if waitAnswer is false
+        if (!waitAnswer) return;
+        waitAnswer = false;
+
+        // check the answer
+        checkAnswer(this.dataset['number']);
+    });
+};
+
 
 var timeScore = 0;
 var questionCounter = 0;
 var myInterval = 0;
+var waitAnswer = false;
+var highscores = [];
 
 var questions = [
     {
@@ -38,13 +61,48 @@ var questions = [
     },
 ];
 
+
 //CONSTANTS
 const WRONG_PENALTY = 10;
 const totalQs = questions.length;
 
-var waitAnswer = false;
+function showScoreBoard() {
+    scoreboard.style.display = "block";
+    highBtn.innerText = "Hide High Scores";
+    
+    // Sort
+    var sorted = highscores.sort(function(a,b) {
+        return b.score - a.score;
+    });
+
+    var topTen = sorted.slice(0,10);
+    
+    str = "";
+    i=0;
+    topTen.forEach( function(item) {
+        console.log(item);
+        str += '<tr><td>' + ++i + '</td>';
+        str += '<td>' + item.initial + '</td>';
+        str += '<td>' + item.score + '</td></tr>';
+    } );
+    
+    document.getElementById('top10container').innerHTML = str;
+
+}
+
+function hideScoreBoard() {
+    scoreboard.style.display = "none";
+    highBtn.innerText = "Show High Scores";
+}
+
+function toggleScoreBoard() {
+    if(scoreboard.style.display == "none") showScoreBoard()
+    else hideScoreBoard()
+}
 
 function startGame() {
+    // hide the scoreboard
+    hideScoreBoard(false);
     // reset the game
     // clear existing timer if any, question start from number 0, score start from 30
     if(myInterval != 0) clearInterval(myInterval);
@@ -93,17 +151,7 @@ function displayQuestion(i) {
     };
 }
 
-// click hanlding of choices
-for(j=0;j<4;j++) {
-    choices[j].addEventListener('click', function() {
-        // ignore if waitAnswer is false
-        if (!waitAnswer) return;
-        waitAnswer = false;
 
-        // check the answer
-        checkAnswer(this.dataset['number']);
-    });
-};
 
 function checkAnswer(j) {
     if (j == questions[questionCounter].answer)
@@ -137,8 +185,15 @@ function endGame() {
     // minimum score is 0
     if(timeScore <=0) timeScore = 0;
     updateTimeText();
-    
-    msgText.innerText = 'score: ' + timeScore;
+
+    // msgText.innerText = 'score: ' + timeScore;
+    var name = prompt('Your Score is ' + timeScore + '. Please enter your initial.');
+    highscores.push({
+        initial: name,
+        score: timeScore
+    });
+
+    showScoreBoard();
 }
 
 

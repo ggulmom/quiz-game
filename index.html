@@ -10,6 +10,14 @@
   <body>
     <!-- start button: clickable -->
     <div id="start" class="btn">Click to Start</div>
+    <div id="highs" class="btn">Show High Scores</div>
+
+    <div id="scoreboard" class="container" style="display:none">
+        <h2 class="container">Top 10 Scores</h2>
+        <div id="clear" class="btn">Clear Scores</div>
+        <table id="top10container">
+        </table>
+    </div>
 
     <!-- Time Count Down: update every second or when answer is wrong -->
     <h3>Time: </h3> <h2 id="time"></h2>
