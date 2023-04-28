@@ -210,6 +210,3 @@ function endGame() {
     resetGame();
     showScoreBoard();
 }
-
-
-// startGame();
